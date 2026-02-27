@@ -1,0 +1,149 @@
+.page-header {
+  margin-bottom: 1.15rem;
+}
+
+.page-header__title {
+  margin: 0;
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+}
+
+.entry-card,
+.entry-single,
+.entry-page,
+.comments {
+  background: var(--trs-gradient-surface);
+  border: 1px solid var(--trs-border);
+  border-radius: var(--trs-radius-lg);
+  box-shadow: var(--trs-shadow);
+}
+
+.entry-card,
+.entry-single,
+.entry-page {
+  padding: clamp(1rem, 2vw, 1.35rem);
+}
+
+.entry-card + .entry-card,
+.entry-card + .post-navigation,
+.entry-card + .navigation,
+.entry-page + .entry-page {
+  margin-top: 1rem;
+}
+
+.entry-card__header,
+.entry-single__header {
+  margin-bottom: 0.65rem;
+}
+
+.entry-title,
+.entry-single__title {
+  margin: 0;
+  line-height: 1.25;
+}
+
+.entry-title {
+  font-size: clamp(1.12rem, 1.8vw, 1.35rem);
+}
+
+.entry-title__link {
+  color: var(--trs-text);
+}
+
+.entry-title__link:hover {
+  color: var(--trs-primary-strong);
+}
+
+.entry-single__title {
+  font-size: clamp(1.3rem, 2.3vw, 1.95rem);
+}
+
+.entry-meta {
+  margin-top: 0.35rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  font-size: 0.86rem;
+  color: var(--trs-text-muted);
+}
+
+.entry-meta a {
+  color: var(--trs-primary-strong);
+  font-weight: 600;
+}
+
+.entry-summary,
+.entry-content {
+  color: var(--trs-text-muted);
+}
+
+.entry-content > * + * {
+  margin-top: 0.9rem;
+}
+
+.entry-content p,
+.entry-summary p {
+  margin: 0;
+}
+
+.entry-content h2,
+.entry-content h3 {
+  margin-top: 1.25rem;
+}
+
+.entry-content img {
+  border-radius: var(--trs-radius-sm);
+}
+
+.page-nav,
+.post-navigation,
+.navigation {
+  margin-top: 1rem;
+}
+
+.post-navigation .nav-links,
+.navigation .nav-links {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.post-navigation a,
+.navigation a,
+.page-nav a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--trs-border);
+  background: var(--trs-surface-alt);
+  color: var(--trs-text);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.post-navigation a:hover,
+.navigation a:hover,
+.page-nav a:hover {
+  border-color: color-mix(in oklab, var(--trs-primary) 45%, var(--trs-border));
+  color: #f6e7c2;
+}
+
+.comments {
+  margin-top: 1rem;
+  padding: 1rem;
+}
+
+.comments h2 {
+  margin: 0 0 0.6rem;
+  font-size: 1.1rem;
+}
+
+.comment-list {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.comment-list li + li {
+  margin-top: 0.8rem;
+}

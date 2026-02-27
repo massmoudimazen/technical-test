@@ -1,0 +1,1039 @@
+openapi: 3.0.0
+info:
+  title: 'Captain API'
+  description: 'Captain Scrappin API for scraper orchestration, market averages, history, and operational status.'
+  version: 1.0.0
+servers:
+  -
+    url: /
+    description: 'Current environment'
+paths:
+  /api/user:
+    get:
+      tags:
+        - Auth
+      summary: 'Get authenticated user (Sanctum)'
+      operationId: 020daff5d6933860005be8de70e220cf
+      responses:
+        200:
+          description: 'Authenticated user payload'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticatedUser'
+        401:
+          description: Unauthenticated
+      security:
+        -
+          SanctumBearer: []
+  /api/health:
+    get:
+      tags:
+        - Health
+      summary: 'Health status alias'
+      operationId: 87d52a0e764cc8abdfc723e9dfe38546
+      responses:
+        200:
+          description: 'Health payload'
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  service:
+                    type: string
+                    example: captain-api
+                  env:
+                    type: string
+                    example: local
+                  version:
+                    type: string
+                    example: 1.0.0
+                  time:
+                    type: string
+                    format: date-time
+                  services:
+                    properties:
+                      api:
+                        type: string
+                        example: ok
+                      database:
+                        type: string
+                        example: ok
+                      queue:
+                        type: string
+                        example: ok
+                    type: object
+                  metrics:
+                    properties:
+                      vendors_count:
+                        type: integer
+                        nullable: true
+                      products_count:
+                        type: integer
+                        nullable: true
+                      prices_count:
+                        type: integer
+                        nullable: true
+                      last_scrape:
+                        type: string
+                        format: date-time
+                        nullable: true
+                      queue_connection:
+                        type: string
+                        nullable: true
+                      queue_name:
+                        type: string
+                        nullable: true
+                      jobs_pending:
+                        type: integer
+                        nullable: true
+                      failed_jobs:
+                        type: integer
+                        nullable: true
+                    type: object
+                type: object
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: 'Health check failed'
+      security:
+        -
+          CaptainTokenHeader: []
+        -
+          BearerToken: []
+  /api/v1/health:
+    get:
+      tags:
+        - Health
+      summary: 'Health status'
+      operationId: f8d7ad89f932ed7e4b1225d953977a20
+      responses:
+        200:
+          description: 'Health payload'
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  service:
+                    type: string
+                    example: captain-api
+                  env:
+                    type: string
+                    example: local
+                  version:
+                    type: string
+                    example: 1.0.0
+                  time:
+                    type: string
+                    format: date-time
+                  services:
+                    properties:
+                      api:
+                        type: string
+                        example: ok
+                      database:
+                        type: string
+                        example: ok
+                      queue:
+                        type: string
+                        example: ok
+                    type: object
+                  metrics:
+                    properties:
+                      vendors_count:
+                        type: integer
+                        nullable: true
+                      products_count:
+                        type: integer
+                        nullable: true
+                      prices_count:
+                        type: integer
+                        nullable: true
+                      last_scrape:
+                        type: string
+                        format: date-time
+                        nullable: true
+                      queue_connection:
+                        type: string
+                        nullable: true
+                      queue_name:
+                        type: string
+                        nullable: true
+                      jobs_pending:
+                        type: integer
+                        nullable: true
+                      failed_jobs:
+                        type: integer
+                        nullable: true
+                    type: object
+                type: object
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: 'Health check failed'
+      security:
+        -
+          CaptainTokenHeader: []
+        -
+          BearerToken: []
+  /api/v1/openapi:
+    get:
+      tags:
+        - Documentation
+      summary: 'OpenAPI document download'
+      operationId: 81c775a9b9a2b338826afb642a014d56
+      responses:
+        200:
+          description: 'OpenAPI YAML document'
+          content:
+            application/yaml:
+              schema:
+                type: string
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: 'Document not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        -
+          CaptainTokenHeader: []
+        -
+          BearerToken: []
+  /api/v1/products:
+    get:
+      tags:
+        - Products
+      summary: 'List products'
+      operationId: 5e02e2fdd48a2f44333dcff5493062d7
+      responses:
+        200:
+          description: 'Products list'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProductListItem'
+                  meta:
+                    properties:
+                      count:
+                        type: integer
+                        example: 5
+                    type: object
+                type: object
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        -
+          CaptainTokenHeader: []
+        -
+          BearerToken: []
+  /api/v1/products/latest:
+    get:
+      tags:
+        - Products
+      summary: 'Latest aggregated prices for all products'
+      operationId: 40918d80a65cb504fc259f2918f03d27
+      responses:
+        200:
+          description: 'Latest product aggregate list'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LatestProductAggregate'
+                  meta:
+                    properties:
+                      count:
+                        type: integer
+                        example: 5
+                      calculated_at:
+                        type: string
+                        format: date-time
+                    type: object
+                type: object
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        -
+          CaptainTokenHeader: []
+        -
+          BearerToken: []
+  '/api/v1/products/{slug}/average':
+    get:
+      tags:
+        - Products
+      summary: 'Get current market average for a product (latest snapshot per vendor)'
+      operationId: 0c4bc68b27b03ae61d9c7e91f4ec279d
+      parameters:
+        -
+          name: slug
+          in: path
+          description: 'Product slug'
+          required: true
+          schema:
+            type: string
+            example: gold-bar-1kg
+      responses:
+        200:
+          description: 'Average price payload'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/ProductAveragePayload'
+                type: object
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: 'Product not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        -
+          CaptainTokenHeader: []
+        -
+          BearerToken: []
+  '/api/v1/products/{slug}/history':
+    get:
+      tags:
+        - Products
+      summary: 'Get historical average prices for charting'
+      operationId: 4667e005aa13d7abf5ec573dd457d0a4
+      parameters:
+        -
+          name: slug
+          in: path
+          description: 'Product slug'
+          required: true
+          schema:
+            type: string
+            example: gold-bar-1kg
+      responses:
+        200:
+          description: 'Historical average series'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    properties:
+                      product:
+                        type: string
+                        example: 'Gold Bar 1kg'
+                      slug:
+                        type: string
+                        example: gold-bar-1kg
+                      metal:
+                        type: string
+                        example: gold
+                      history:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ProductHistoryPoint'
+                      calculated_at:
+                        type: string
+                        format: date-time
+                    type: object
+                type: object
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: 'Product not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        -
+          CaptainTokenHeader: []
+        -
+          BearerToken: []
+  '/api/v1/products/{slug}/vendors':
+    get:
+      tags:
+        - Products
+      summary: 'Get latest vendor prices for a product'
+      operationId: dbec7c4b6258606da53771d3ff4f9933
+      parameters:
+        -
+          name: slug
+          in: path
+          description: 'Product slug'
+          required: true
+          schema:
+            type: string
+            example: gold-bar-1kg
+      responses:
+        200:
+          description: 'Vendor rows payload'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    properties:
+                      product:
+                        type: string
+                        example: 'Gold Bar 1kg'
+                      slug:
+                        type: string
+                        example: gold-bar-1kg
+                      metal:
+                        type: string
+                        example: gold
+                      vendors:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/VendorLatestPrice'
+                      vendor_count:
+                        type: integer
+                        example: 3
+                      lowest_buy:
+                        type: number
+                        format: float
+                        nullable: true
+                      highest_buy:
+                        type: number
+                        format: float
+                        nullable: true
+                      lowest_sell:
+                        type: number
+                        format: float
+                        nullable: true
+                      highest_sell:
+                        type: number
+                        format: float
+                        nullable: true
+                      calculated_at:
+                        type: string
+                        format: date-time
+                    type: object
+                type: object
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: 'Product not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        -
+          CaptainTokenHeader: []
+        -
+          BearerToken: []
+  /api/v1/scrapers/run:
+    post:
+      tags:
+        - Scrapers
+      summary: 'Trigger scraper run'
+      description: 'Triggers run:scrapers command. By default this forces immediate dispatch unless force=false is passed.'
+      operationId: 8bd2567c13a42d45806fdc9fb1ff124b
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScraperRunRequest'
+      responses:
+        200:
+          description: 'Scraper trigger accepted'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    properties:
+                      exit_code:
+                        type: integer
+                        example: 0
+                      vendor:
+                        type: string
+                        example: aurum-market
+                        nullable: true
+                      mode:
+                        type: string
+                        example: queued
+                      forced:
+                        type: boolean
+                        example: true
+                      output:
+                        type: string
+                        example: 'Dispatched: aurum-market'
+                      triggered_at:
+                        type: string
+                        format: date-time
+                    type: object
+                type: object
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        422:
+          description: 'Validation failed'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        500:
+          description: 'Unable to trigger scrapers'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        -
+          CaptainTokenHeader: []
+        -
+          BearerToken: []
+  /api/v1/scrapers/status:
+    get:
+      tags:
+        - Scrapers
+      summary: 'Get queue and scraper execution status'
+      operationId: f2620996b03f83cdc913d670541e1ed7
+      responses:
+        200:
+          description: 'Scraper status payload'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    properties:
+                      queue:
+                        properties:
+                          connection:
+                            type: string
+                            example: database
+                          name:
+                            type: string
+                            example: scrapers
+                          pending_jobs:
+                            type: integer
+                            example: 0
+                          failed_jobs:
+                            type: integer
+                            example: 0
+                        type: object
+                      scrape_frequency_minutes:
+                        type: integer
+                        example: 5
+                      last_dispatch_at:
+                        type: string
+                        format: date-time
+                        nullable: true
+                      latest_scraped_at:
+                        type: string
+                        format: date-time
+                        nullable: true
+                      latest_prices:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ScraperStatusLatestPrice'
+                      recent_logs:
+                        type: array
+                        items:
+                          type: string
+                      checked_at:
+                        type: string
+                        format: date-time
+                    type: object
+                type: object
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        -
+          CaptainTokenHeader: []
+        -
+          BearerToken: []
+  /api/v1/config:
+    get:
+      tags:
+        - Config
+      summary: 'Read scraper configuration'
+      operationId: 12818d2dc582305d52cb6b1ad56550ca
+      responses:
+        200:
+          description: 'Current scraper config'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    properties:
+                      scrape_frequency:
+                        properties:
+                          value:
+                            type: integer
+                            example: 5
+                          unit:
+                            type: string
+                            example: minutes
+                          description:
+                            type: string
+                            example: 'How often scrapers run (in minutes)'
+                        type: object
+                      queue_connection:
+                        type: string
+                        example: database
+                      queue_name:
+                        type: string
+                        example: scrapers
+                      request_timeout:
+                        type: integer
+                        example: 15
+                    type: object
+                type: object
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        -
+          CaptainTokenHeader: []
+        -
+          BearerToken: []
+  /api/v1/config/scrape-frequency:
+    put:
+      tags:
+        - Config
+      summary: 'Update scraper frequency'
+      description: 'Updates database-backed scrape frequency in minutes.'
+      operationId: 8803c1aeac863375901d12820e01ab90
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScrapeFrequencyUpdateRequest'
+      responses:
+        200:
+          description: 'Frequency updated'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'Scrape frequency updated to 5 minutes'
+                  data:
+                    properties:
+                      scrape_frequency:
+                        properties:
+                          value:
+                            type: integer
+                            example: 5
+                          unit:
+                            type: string
+                            example: minutes
+                        type: object
+                    type: object
+                type: object
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        422:
+          description: 'Validation failed'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+      security:
+        -
+          CaptainTokenHeader: []
+        -
+          BearerToken: []
+components:
+  schemas:
+    ErrorResponse:
+      required:
+        - success
+        - error
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: Unauthorized
+      type: object
+    ValidationErrorResponse:
+      required:
+        - message
+        - errors
+      properties:
+        message:
+          type: string
+          example: 'The given data was invalid.'
+        errors:
+          type: object
+          additionalProperties:
+            schema: CaptainApiDocs
+            type: array
+            items:
+              type: string
+      type: object
+    CaptainApiDocs:
+      type: array
+      items:
+        type: string
+    AuthenticatedUser:
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: 'Captain Admin'
+        email:
+          type: string
+          format: email
+          example: admin@example.com
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+      type: object
+    ProductListItem:
+      required:
+        - id
+        - name
+        - slug
+        - metal
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: 'Gold Bar 1kg'
+        slug:
+          type: string
+          example: gold-bar-1kg
+        metal:
+          type: string
+          example: gold
+      type: object
+    LatestProductAggregate:
+      required:
+        - product
+        - slug
+        - metal
+        - average_sell_price
+        - average_buy_price
+        - vendor_count
+        - latest_scraped_at
+      properties:
+        product:
+          type: string
+          example: 'Gold Bar 1kg'
+        slug:
+          type: string
+          example: gold-bar-1kg
+        metal:
+          type: string
+          example: gold
+        average_sell_price:
+          type: number
+          format: float
+          example: 67495.32
+        average_buy_price:
+          type: number
+          format: float
+          example: 63985.14
+        vendor_count:
+          type: integer
+          example: 3
+        latest_scraped_at:
+          type: string
+          format: date-time
+          nullable: true
+      type: object
+    ProductAveragePayload:
+      required:
+        - product
+        - slug
+        - metal
+        - average_buy_price
+        - average_sell_price
+        - vendor_count
+        - calculated_at
+      properties:
+        product:
+          type: string
+          example: 'Gold Bar 1kg'
+        slug:
+          type: string
+          example: gold-bar-1kg
+        metal:
+          type: string
+          example: gold
+        average_buy_price:
+          type: number
+          format: float
+          example: 63985.14
+        average_sell_price:
+          type: number
+          format: float
+          example: 67495.32
+        vendor_count:
+          type: integer
+          example: 3
+        calculated_at:
+          type: string
+          format: date-time
+      type: object
+    ProductHistoryPoint:
+      required:
+        - timestamp
+        - average_sell_price
+        - average_buy_price
+        - vendor_count
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        average_sell_price:
+          type: number
+          format: float
+          example: 67495.32
+        average_buy_price:
+          type: number
+          format: float
+          example: 63985.14
+        vendor_count:
+          type: integer
+          example: 3
+      type: object
+    VendorLatestPrice:
+      required:
+        - vendor_id
+        - vendor_name
+        - vendor_slug
+        - buy_price
+        - sell_price
+        - stock_status
+        - scraped_at
+      properties:
+        vendor_id:
+          type: integer
+          example: 1
+        vendor_name:
+          type: string
+          example: 'Aurum Market'
+        vendor_slug:
+          type: string
+          example: aurum-market
+        buy_price:
+          type: number
+          format: float
+          example: 63980.2
+        sell_price:
+          type: number
+          format: float
+          example: 67480.2
+        stock_status:
+          type: string
+          example: in_stock
+        scraped_at:
+          type: string
+          format: date-time
+          nullable: true
+      type: object
+    ScraperStatusLatestPrice:
+      required:
+        - product
+        - product_slug
+        - vendor
+        - vendor_slug
+        - buy_price
+        - sell_price
+        - stock_status
+        - scraped_at
+      properties:
+        product:
+          type: string
+          example: 'Gold Bar 1kg'
+        product_slug:
+          type: string
+          example: gold-bar-1kg
+        vendor:
+          type: string
+          example: 'Aurum Market'
+        vendor_slug:
+          type: string
+          example: aurum-market
+        buy_price:
+          type: number
+          format: float
+          example: 63980.2
+        sell_price:
+          type: number
+          format: float
+          example: 67480.2
+        stock_status:
+          type: string
+          example: in_stock
+        scraped_at:
+          type: string
+          format: date-time
+          nullable: true
+      type: object
+    ScraperRunRequest:
+      properties:
+        vendor:
+          type: string
+          example: aurum-market
+          nullable: true
+        sync:
+          type: boolean
+          example: false
+          nullable: true
+        force:
+          type: boolean
+          example: true
+          nullable: true
+      type: object
+    ScrapeFrequencyUpdateRequest:
+      required:
+        - frequency
+      properties:
+        frequency:
+          type: integer
+          maximum: 1440
+          minimum: 1
+          example: 5
+      type: object
+  securitySchemes:
+    CaptainTokenHeader:
+      type: apiKey
+      description: 'Primary token header used by Captain middleware.'
+      name: X-CAPTAIN-TOKEN
+      in: header
+    BearerToken:
+      type: http
+      scheme: bearer
+      bearerFormat: Token
+      description: 'Fallback bearer token format: Authorization: Bearer {token}'
+    SanctumBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: Token
+      description: 'Laravel Sanctum token for /api/user endpoint.'
+tags:
+  -
+    name: Auth
+    description: Auth
+  -
+    name: Health
+    description: Health
+  -
+    name: Documentation
+    description: Documentation
+  -
+    name: Products
+    description: Products
+  -
+    name: Scrapers
+    description: Scrapers
+  -
+    name: Config
+    description: Config
+security:
+  -
+    CaptainTokenHeader: []
+  -
+    BearerToken: []

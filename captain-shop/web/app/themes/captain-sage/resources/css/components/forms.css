@@ -1,0 +1,45 @@
+.search-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.55rem;
+  margin-top: 0.9rem;
+}
+
+.search-form label {
+  display: block;
+}
+
+.search-form input[type="search"] {
+  width: 100%;
+  min-height: 42px;
+  border-radius: var(--trs-radius-sm);
+  border: 1px solid var(--trs-border);
+  background: var(--trs-surface-alt);
+  color: var(--trs-text);
+  padding: 0.55rem 0.7rem;
+}
+
+.search-form button,
+input[type="submit"],
+button[type="submit"] {
+  min-height: 42px;
+  border-radius: var(--trs-radius-sm);
+  border: 1px solid color-mix(in oklab, var(--trs-primary) 65%, var(--trs-border));
+  background: color-mix(in oklab, var(--trs-primary) 68%, #211805);
+  color: #1b1408;
+  padding-inline: 0.95rem;
+  font-weight: 600;
+}
+
+.search-form button:hover,
+input[type="submit"]:hover,
+button[type="submit"]:hover {
+  border-color: var(--trs-primary-strong);
+  background: var(--trs-primary-strong);
+}
+
+@media (max-width: 560px) {
+  .search-form {
+    grid-template-columns: 1fr;
+  }
+}

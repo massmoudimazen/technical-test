@@ -1,0 +1,14 @@
+@import "tailwindcss" theme(static);
+@source "../views/";
+@source "../../app/";
+
+@import "./base/tokens.css";
+@import "./base/typography.css";
+@import "./components/layout.css";
+@import "./components/header.css";
+@import "./components/content.css";
+@import "./components/forms.css";
+@import "./components/captain-base.css";
+@import "./components/woocommerce.css";
+@import "./components/charts.css";
+@import "./components/footer.css";
